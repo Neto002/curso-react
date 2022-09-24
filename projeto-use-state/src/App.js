@@ -1,10 +1,28 @@
-import React, { useState } from "react";
+// Usando useState, useEffect
+
+import React, { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
-  const [tarefas, setTarefas] = useState(["tarefa1", "tarefa2"]);
+  const [tarefas, setTarefas] = useState([]);
 
   const [inputTarefa, setInputTarefa] = useState("");
+
+  // Quando componente terminar de ser montado
+  useEffect(() => {
+    const tarefasStorage = localStorage.getItem('tarefas');
+
+    if (tarefasStorage) {
+      setTarefas(JSON.parse(tarefasStorage))
+    }
+
+  }, []);
+
+
+  // Quando componente sofrer atualização
+  useEffect(() => {
+    localStorage.setItem('tarefas', JSON.stringify(tarefas))
+  }, [tarefas]);
 
   function handleAdd() {
     setTarefas([...tarefas, inputTarefa]);
