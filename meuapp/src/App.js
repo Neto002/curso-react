@@ -366,9 +366,9 @@ export default class App extends Component {
 
 // Projeto Biscoito da Sorte
 
-import React, { Component } from "react";
+/* import React, { Component } from "react";
 import Botao from "./components/botao";
-import "./style.css";
+import "./styleBiscoitoSorte.css";
 
 export default class App extends Component {
   constructor(props) {
@@ -399,6 +399,84 @@ export default class App extends Component {
         />
         <Botao nome="Abrir Biscoito" acao={this.quebraBiscoito} />
         <h3 className="textoFrase">{this.state.textoFrase}</h3>
+      </div>
+    );
+  }
+} */
+
+// Projeto Cronômetro
+
+import React, { Component } from "react";
+import "./index.css";
+import "./styleCronometro.css";
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      numero: 0,
+      textoBotao: 'Iniciar'
+    };
+    this.timer = null;
+    this.iniciar = this.iniciar.bind(this);
+    this.limpar = this.limpar.bind(this);
+  }
+
+  iniciar() {
+
+    let state = this.state;
+
+    // Se o timer estiver rodando
+    if (this.timer !== null) {
+      // Zera o timer
+      clearInterval(this.timer);
+      this.timer = null;
+
+      state.textoBotao = 'Iniciar'
+    } else {
+      // Timer começa a contar
+      this.timer = setInterval(() => {
+        let state = this.state;
+        state.numero += 0.01;
+        this.setState(state);
+      }, 10);
+
+      state.textoBotao = 'Pausar'
+    }
+
+    this.setState(state);
+  }
+
+  limpar() {
+
+    // Se o timer estiver rodando
+    if (this.timer !== null) {
+      // Zera o timer
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+
+    this.setState({numero: 0, textoBotao: 'Iniciar'})
+  }
+
+  render() {
+    return (
+      <div className="container">
+        <img
+          className="image"
+          src={require("./assets/cronometro.png")}
+          alt="Cronômetro"
+        />
+        <a className="timer">{this.state.numero.toFixed(2)}</a>
+
+        <div className="areaBtn">
+          <a className="botao" id="botaoIniciar" onClick={this.iniciar}>
+            {this.state.textoBotao}
+          </a>
+          <a className="botao" onClick={this.limpar}>
+            Limpar
+          </a>
+        </div>
       </div>
     );
   }
