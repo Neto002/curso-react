@@ -234,7 +234,7 @@ export default class App extends Component {
 
 // Formulários
 
-import React, { Component } from "react";
+/* import React, { Component } from "react";
 
 export default class App extends Component {
   constructor(props) {
@@ -289,7 +289,7 @@ export default class App extends Component {
       </div>
     );
   }
-}
+} */
 
 // Praticando Formulários
 
@@ -363,3 +363,43 @@ export default class App extends Component {
     );
   }
 } */
+
+// Projeto Biscoito da Sorte
+
+import React, { Component } from "react";
+import Botao from "./components/botao";
+import "./style.css";
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      textoFrase: ''
+    };
+
+    this.quebraBiscoito = this.quebraBiscoito.bind(this)
+    this.frases = ["Frase 1", "Frase 2", "Frase 3", "Frase 4"];
+  }
+
+  quebraBiscoito() {
+    let state = this.state;
+    let random = Math.floor(Math.random() * this.frases.length)
+
+    state.textoFrase = `" ${ this.frases[random] } "`
+    this.setState(state)
+  }
+
+  render() {
+    return (
+      <div className="container">
+        <img
+          className="image"
+          src={require("./assets/biscoito.png")}
+          alt="Imagem de Biscoito da sorte"
+        />
+        <Botao nome="Abrir Biscoito" acao={this.quebraBiscoito} />
+        <h3 className="textoFrase">{this.state.textoFrase}</h3>
+      </div>
+    );
+  }
+}
