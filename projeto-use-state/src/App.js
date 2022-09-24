@@ -1,4 +1,4 @@
-// Usando useState, useEffect
+// Usando useState, useEffect, useMemo
 
 import React, { useState, useEffect } from "react";
 import "./App.css";

@@ -406,7 +406,7 @@ export default class App extends Component {
 
 // Projeto Cronômetro
 
-import React, { Component } from "react";
+/* import React, { Component } from "react";
 import "./index.css";
 import "./styleCronometro.css";
 
@@ -480,4 +480,4 @@ export default class App extends Component {
       </div>
     );
   }
-}
+} */
