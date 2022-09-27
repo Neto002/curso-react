@@ -1,51 +1,56 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
-import './style.css'
+import "./style.css";
 
 export default function Filme() {
-
-  const {id} = useParams();
+  const { id } = useParams();
   const [filme, setFilme] = useState({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getFilme() {
-      await api.get(`movie/${id}`, {
-        params: {
-          api_key: "8722a889e8aa183266cfc4a9386ffa0e",
-          language: "pt-BR"
-        }
-      })
-      .then((response) => {
-        setFilme(response.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        console.log("filme n encontrado");
-      });
+      await api
+        .get(`movie/${id}`, {
+          params: {
+            api_key: "8722a889e8aa183266cfc4a9386ffa0e",
+            language: "pt-BR",
+          },
+        })
+        .then((response) => {
+          setFilme(response.data);
+          setLoading(false);
+        })
+        .catch(() => {
+          console.log("filme n encontrado");
+          navigate("/", { replace: true });
+          return;
+        });
     }
 
     getFilme();
 
     return () => {
       console.log("desmontado");
-    }
+    };
+  }, [id, navigate]);
 
-  }, [])
-  
   if (loading) {
-    return(
+    return (
       <div className="filme-info">
         <h1>Carregando detalhes..</h1>
       </div>
-    )
+    );
   }
 
   return (
     <div className="filme-info">
       <h1>{filme.title}</h1>
-      <img src={`https://image.tmdb.org/t/p/original/${filme.backdrop_path}`} alt={filme.title} />
+      <img
+        src={`https://image.tmdb.org/t/p/original/${filme.backdrop_path}`}
+        alt={filme.title}
+      />
 
       <h3>Sinopse</h3>
       <span>{filme.overview}</span>
@@ -54,7 +59,9 @@ export default function Filme() {
       <div className="area-buttons">
         <button>Salvar</button>
         <button>
-          <a href="#">Trailer</a>
+          <a href={`https://www.youtube.com/results?search_query=${filme.title} Trailer`} target="_blank" rel="noreferrer">
+            Trailer
+          </a>
         </button>
       </div>
     </div>
