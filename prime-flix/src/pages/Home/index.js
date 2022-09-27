@@ -8,6 +8,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "PrimeFlix - Neto"
     async function loadFilmes() {
       const response = await api.get("movie/now_playing", {
         params: {

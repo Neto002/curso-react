@@ -8,8 +8,10 @@ export default function Favoritos() {
     const [filmes, setFilmes] = useState([]);
 
     useEffect(() => {
+        document.title = "PrimeFlix - Favoritos"
         const minhaLista = localStorage.getItem("@primeflix")
         setFilmes(JSON.parse(minhaLista) || [])
+        
     }, [])
 
     function excluirFilme(id) {

@@ -20,11 +20,14 @@ export default function Filme() {
           },
         })
         .then((response) => {
+          document.title = `PrimeFlix - ${response.data.title}`
           setRequestFilme(response.data);
           setLoading(false);
         })
+        .then(() => {
+        })
         .catch(() => {
-          console.log("filme n encontrado");
+          console.log("filme não encontrado");
           navigate("/", { replace: true });
         });
     }
@@ -41,17 +44,19 @@ export default function Filme() {
 
     let filmesSalvos = JSON.parse(minhaLista) || [];
 
-    const hasFilme = filmesSalvos.some((filmeSalvo) => filmeSalvo.id === requestFilme.id)
+    const hasFilme = filmesSalvos.some(
+      (filmeSalvo) => filmeSalvo.id === requestFilme.id
+    );
 
     if (hasFilme) {
-      toast.warn("Filme já adicionado à sua lista")
+      toast.warn("Filme já adicionado à sua lista");
       return;
     }
 
-    filmesSalvos.push(requestFilme)
-    localStorage.setItem("@primeflix", JSON.stringify(filmesSalvos))
+    filmesSalvos.push(requestFilme);
+    localStorage.setItem("@primeflix", JSON.stringify(filmesSalvos));
 
-    toast.success("Filme salvo com sucesso!")
+    toast.success("Filme salvo com sucesso!");
   }
 
   if (loading) {
@@ -77,7 +82,11 @@ export default function Filme() {
       <div className="area-buttons">
         <button onClick={salvarFilme}>Salvar</button>
         <button>
-          <a href={`https://www.youtube.com/results?search_query=${requestFilme.title} Trailer`} target="blank" rel="noreferrer">
+          <a
+            href={`https://www.youtube.com/results?search_query=${requestFilme.title} Trailer`}
+            target="blank"
+            rel="noreferrer"
+          >
             Trailer
           </a>
         </button>
