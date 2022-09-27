@@ -4,10 +4,10 @@ import api from "../../services/api";
 import "./style.css";
 
 export default function Filme() {
-  const { id } = useParams();
-  const [filme, setFilme] = useState({});
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [requestFilme, setRequestFilme] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getFilme() {
@@ -19,13 +19,12 @@ export default function Filme() {
           },
         })
         .then((response) => {
-          setFilme(response.data);
+          setRequestFilme(response.data);
           setLoading(false);
         })
         .catch(() => {
           console.log("filme n encontrado");
           navigate("/", { replace: true });
-          return;
         });
     }
 
@@ -35,6 +34,24 @@ export default function Filme() {
       console.log("desmontado");
     };
   }, [id, navigate]);
+
+  function salvarFilme() {
+    const minhaLista = localStorage.getItem("@primeflix");
+
+    let filmesSalvos = JSON.parse(minhaLista) || [];
+
+    const hasFilme = filmesSalvos.some((filmeSalvo) => filmeSalvo.id === requestFilme.id)
+
+    if (hasFilme) {
+      alert("Filme já adicionado à sua lista")
+      return;
+    }
+
+    filmesSalvos.push(requestFilme)
+    localStorage.setItem("@primeflix", JSON.stringify(filmesSalvos))
+
+    alert("Filme Salvo com Sucesso!")
+  }
 
   if (loading) {
     return (
@@ -46,20 +63,20 @@ export default function Filme() {
 
   return (
     <div className="filme-info">
-      <h1>{filme.title}</h1>
+      <h1>{requestFilme.title}</h1>
       <img
-        src={`https://image.tmdb.org/t/p/original/${filme.backdrop_path}`}
-        alt={filme.title}
+        src={`https://image.tmdb.org/t/p/original/${requestFilme.backdrop_path}`}
+        alt={requestFilme.title}
       />
 
       <h3>Sinopse</h3>
-      <span>{filme.overview}</span>
-      <strong>Avaliação: {filme.vote_average}/10</strong>
+      <span>{requestFilme.overview}</span>
+      <strong>Avaliação: {requestFilme.vote_average}/10</strong>
 
       <div className="area-buttons">
-        <button>Salvar</button>
+        <button onClick={salvarFilme}>Salvar</button>
         <button>
-          <a href={`https://www.youtube.com/results?search_query=${filme.title} Trailer`} target="_blank" rel="noreferrer">
+          <a href={`https://www.youtube.com/results?search_query=${requestFilme.title} Trailer`} target="blank" rel="noreferrer">
             Trailer
           </a>
         </button>
