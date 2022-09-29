@@ -5,6 +5,8 @@ import { firestore, auth } from "./firebase/config";
 function App() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [user, setUser] = useState(false);
+  const [userLogged, setUserLogged] = useState({});
 
   const [id, setId] = useState("");
   const [titulo, setTitulo] = useState("");
@@ -31,6 +33,24 @@ function App() {
     loadPosts();
   }, []);
 
+  useEffect(() => {
+    async function checkLogin() {
+      await auth.onAuthStateChanged((user) => {
+        if (user) {
+          setUser(true);
+          setUserLogged({
+            uid: user.uid,
+            email: user.email,
+          });
+        } else {
+          setUser(false);
+          setUserLogged({});
+        }
+      });
+    }
+    checkLogin();
+  }, []);
+
   async function cadastrarUsuario() {
     await auth
       .createUserWithEmailAndPassword(email, senha)
@@ -46,6 +66,18 @@ function App() {
           alert("Email inválido");
         }
       });
+  }
+
+  async function login() {
+    await auth.signInWithEmailAndPassword(email, senha).then((value) => {
+      console.log(value.user);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  async function logout() {
+    await auth.signOut();
   }
 
   async function criaPost() {
@@ -135,6 +167,15 @@ function App() {
     <div>
       <h1>Login</h1>
 
+      {user && (
+        <div>
+          <strong>usuario logado</strong>
+          <br/>
+          <span>{userLogged.uid} - {userLogged.email}</span>
+          <br/><br/>
+        </div>
+      )}
+
       <div className="container">
         <label>Email</label>
         <input
@@ -149,7 +190,9 @@ function App() {
           onChange={(e) => setSenha(e.target.value)}
         />
         <br />
+        <button onClick={login}>Fazer Login</button>
         <button onClick={cadastrarUsuario}>Cadastro</button>
+        <button onClick={logout}>Logout</button>
         <br />
       </div>
       <hr />
