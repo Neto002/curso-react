@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import "./style.css";
-import { firestore } from "./firebase/config";
+import { firestore, auth } from "./firebase/config";
 
 function App() {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+
   const [id, setId] = useState("");
   const [titulo, setTitulo] = useState("");
   const [autor, setAutor] = useState("");
@@ -27,6 +30,23 @@ function App() {
 
     loadPosts();
   }, []);
+
+  async function cadastrarUsuario() {
+    await auth
+      .createUserWithEmailAndPassword(email, senha)
+      .then((value) => {
+        console.log(value);
+      })
+      .catch((error) => {
+        if (error.code === "auth/weak-password") {
+          alert("Senha muito fraca...");
+        } else if (error.code === "auth/email-already-in-use") {
+          alert("Email já existe");
+        } else if (error.code === "auth/invalid-email") {
+          alert("Email inválido");
+        }
+      });
+  }
 
   async function criaPost() {
     await firestore
@@ -99,56 +119,81 @@ function App() {
   }
 
   async function excluiPost(id) {
-    firestore.collection('posts').doc(id).delete().then(() => {
-      alert(`post com id ${id} excluído`)
-    }).catch((error) => {
-      console.log(error);
-    })
+    firestore
+      .collection("posts")
+      .doc(id)
+      .delete()
+      .then(() => {
+        alert(`post com id ${id} excluído`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   return (
-    <div className="container">
-      <h1>test</h1>
+    <div>
+      <h1>Login</h1>
 
-      <label>Id: </label>
-      <input type="text" value={id} onChange={(e) => setId(e.target.value)} />
+      <div className="container">
+        <label>Email</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <label>Senha</label>
+        <input
+          type="password"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+        />
+        <br />
+        <button onClick={cadastrarUsuario}>Cadastro</button>
+        <br />
+      </div>
+      <hr />
 
-      <label>Titulo</label>
-      <textarea
-        type="text"
-        value={titulo}
-        onChange={(e) => setTitulo(e.target.value)}
-      />
-
-      <label>Autor</label>
-      <input
-        type="text"
-        value={autor}
-        onChange={(e) => setAutor(e.target.value)}
-      />
-
-      <button onClick={criaPost}>Cadastrar</button>
-      <button onClick={buscaPosts}>Buscar Posts</button>
-      <button onClick={editarPost}>Editar Post</button>
-      <br />
-
-      <h2>Posts existentes no banco:</h2>
-      <br />
-      <ul>
-        {posts.map((post) => {
-          return (
-            <li key={post.id}>
-              <span>ID: {post.id}</span>
-              <br />
-              <span>Titulo: {post.titulo}</span>
-              <br />
-              <span>Autor: {post.autor}</span>
-              <button onClick={() => excluiPost(post.id)}>Excluir post</button>
-              <br />
-            </li>
-          );
-        })}
-      </ul>
+      <div className="container">
+        <h1>Banco de dados</h1>
+        <label>Id: </label>
+        <input type="text" value={id} onChange={(e) => setId(e.target.value)} />
+        <label>Titulo</label>
+        <textarea
+          type="text"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+        />
+        <label>Autor</label>
+        <input
+          type="text"
+          value={autor}
+          onChange={(e) => setAutor(e.target.value)}
+        />
+        <button onClick={criaPost}>Cadastrar</button>
+        <button onClick={buscaPosts}>Buscar Posts</button>
+        <button onClick={editarPost}>Editar Post</button>
+        <br />
+        <h2>Posts existentes no banco:</h2>
+        <br />
+        <ul>
+          {posts.map((post) => {
+            return (
+              <li key={post.id}>
+                <span>ID: {post.id}</span>
+                <br />
+                <span>Titulo: {post.titulo}</span>
+                <br />
+                <span>Autor: {post.autor}</span>
+                <button onClick={() => excluiPost(post.id)}>
+                  Excluir post
+                </button>
+                <br />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 }
