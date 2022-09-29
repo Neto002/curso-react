@@ -1,19 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./style.css";
-import { firestore, auth } from "./firebase/config";
+import { auth, firestore } from "./firebase/config";
 
 function App() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [nome, setNome] = useState("");
+  const [cargo, setCargo] = useState("");
   const [user, setUser] = useState(false);
-  const [userLogged, setUserLogged] = useState({});
+  /* const [userLogged, setUserLogged] = useState({});
 
   const [id, setId] = useState("");
   const [titulo, setTitulo] = useState("");
   const [autor, setAutor] = useState("");
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); */
 
-  useEffect(() => {
+  /* useEffect(() => {
     async function loadPosts() {
       await firestore.collection("posts").onSnapshot((doc) => {
         let meusPosts = [];
@@ -31,9 +33,9 @@ function App() {
     }
 
     loadPosts();
-  }, []);
+  }, []); */
 
-  useEffect(() => {
+  /* useEffect(() => {
     async function checkLogin() {
       await auth.onAuthStateChanged((user) => {
         if (user) {
@@ -49,13 +51,26 @@ function App() {
       });
     }
     checkLogin();
-  }, []);
+  }, []); */
 
   async function cadastrarUsuario() {
     await auth
       .createUserWithEmailAndPassword(email, senha)
-      .then((value) => {
-        console.log(value);
+      .then(async (value) => {
+        await firestore
+          .collection("users")
+          .doc(value.user.uid)
+          .set({
+            nome: nome,
+            cargo: cargo,
+            status: true,
+          })
+          .then(() => {
+            setNome("");
+            setCargo("");
+            setEmail("");
+            setSenha("");
+          });
       })
       .catch((error) => {
         if (error.code === "auth/weak-password") {
@@ -69,18 +84,36 @@ function App() {
   }
 
   async function login() {
-    await auth.signInWithEmailAndPassword(email, senha).then((value) => {
-      console.log(value.user);
-    }).catch((error) => {
-      console.log(error);
-    });
+    await auth
+      .signInWithEmailAndPassword(email, senha)
+      .then(async (value) => {
+        await firestore
+          .collection("users")
+          .doc(value.user.uid)
+          .get()
+          .then((snapshot) => {
+            setUser({
+              nome: snapshot.data().nome,
+              cargo: snapshot.data().cargo,
+              status: snapshot.data().status,
+              email: value.user.email,
+            });
+          });
+      }).then(() => {
+        setEmail('')
+        setSenha('')
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   async function logout() {
     await auth.signOut();
+    setUser({})
   }
 
-  async function criaPost() {
+  /* async function criaPost() {
     await firestore
       .collection("posts")
       .add({
@@ -95,7 +128,7 @@ function App() {
       .catch((error) => {
         console.log(error);
       });
-  }
+  } */
 
   /* async function buscaPost() {
     await firestore
@@ -111,7 +144,7 @@ function App() {
       });
   } */
 
-  async function buscaPosts() {
+  /*   async function buscaPosts() {
     await firestore
       .collection("posts")
       .get()
@@ -161,22 +194,34 @@ function App() {
       .catch((error) => {
         console.log(error);
       });
-  }
+  } */
 
   return (
     <div>
       <h1>Login</h1>
 
-      {user && (
+      {/* {user && (
         <div>
           <strong>usuario logado</strong>
           <br/>
           <span>{userLogged.uid} - {userLogged.email}</span>
           <br/><br/>
         </div>
-      )}
+      )} */}
 
       <div className="container">
+        <label>Nome</label>
+        <input
+          type="text"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+        />
+        <label>Cargo</label>
+        <input
+          type="text"
+          value={cargo}
+          onChange={(e) => setCargo(e.target.value)}
+        />
         <label>Email</label>
         <input
           type="email"
@@ -197,7 +242,16 @@ function App() {
       </div>
       <hr />
 
-      <div className="container">
+      {Object.keys(user).length > 0 && (
+        <div>
+          <strong>Olá</strong> { user.nome } <br />
+          <strong>Cargo</strong> { user.cargo } <br />
+          <strong>Email</strong> { user.email } <br />
+          <strong>Status</strong> { user.status ? 'Empregado(a)' : 'Desligado(a)' } <br />
+        </div>
+      )}
+
+      {/* <div className="container">
         <h1>Banco de dados</h1>
         <label>Id: </label>
         <input type="text" value={id} onChange={(e) => setId(e.target.value)} />
@@ -236,7 +290,7 @@ function App() {
             );
           })}
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 }
