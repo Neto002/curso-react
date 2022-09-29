@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "../SignIn/signin.css";
 import logo from "../../assets/logo.png";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../contexts/auth";
 
 function SignUp() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { signUp } = useContext(AuthContext);
+
   function submitForm(e) {
     e.preventDefault();
-    alert('a')
+    if (nome !== "" && email !== "" && password !== '') {
+      signUp(nome, email, password);
+    }
   }
 
   return (
