@@ -98,6 +98,14 @@ function App() {
       });
   }
 
+  async function excluiPost(id) {
+    firestore.collection('posts').doc(id).delete().then(() => {
+      alert(`post com id ${id} excluído`)
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
   return (
     <div className="container">
       <h1>test</h1>
@@ -135,6 +143,7 @@ function App() {
               <span>Titulo: {post.titulo}</span>
               <br />
               <span>Autor: {post.autor}</span>
+              <button onClick={() => excluiPost(post.id)}>Excluir post</button>
               <br />
             </li>
           );
