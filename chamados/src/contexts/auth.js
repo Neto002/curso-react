@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import firebase from "../firebase/config";
 
 export const AuthContext = createContext({});
@@ -49,10 +50,12 @@ export default function AuthProvider({ children }) {
         setUser(data);
         storageUser(data);
         setLoadingAuth(false);
+        toast.success(`Bem vindo de volta, ${data.nome}!`)
       })
       .catch((error) => {
         setLoadingAuth(false);
         console.log(error);
+        toast.error('Ocorreu um erro...')
       });
   }
 
@@ -82,10 +85,12 @@ export default function AuthProvider({ children }) {
             setUser(data);
             storageUser(data);
             setLoading(false);
+            toast.success(`Seja bem vindo, ${data.nome}!`)
           });
       })
       .catch((error) => {
         console.log(error);
+        toast.error('Ocorreu um erro...')
         setLoadingAuth(false);
       });
   }
