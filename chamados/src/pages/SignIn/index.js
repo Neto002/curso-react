@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./signin.css";
 import logo from "../../assets/logo.png";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../contexts/auth";
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { signIn, loadingAuth } = useContext(AuthContext);
 
   function submitForm(e) {
     e.preventDefault();
-    alert('a')
+    
+    if (email !== '' && password !== '') {
+      signIn(email, password)
+    }
   }
 
   return (
@@ -33,7 +38,7 @@ function SignIn() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit">Acessar</button>
+          <button type="submit">{loadingAuth ? 'Carregando...' : 'Acessar'}</button>
         </form>
 
         <Link to="/register">Criar uma Conta</Link>
