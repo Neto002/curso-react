@@ -3,15 +3,39 @@ import Header from "../../components/Header";
 import Title from "../../components/Title";
 import { FiUser } from "react-icons/fi";
 import { useState } from "react";
+import firebase from "../../firebase/config";
+import { toast } from "react-toastify";
 
 export default function Customers() {
   const [nomeFantasia, setNomeFantasia] = useState("");
   const [cnpj, setCnpj] = useState("");
   const [endereco, setEndereco] = useState("");
 
-  function handleAdd(e) {
+  async function handleAdd(e) {
     e.preventDefault();
-    alert('a')
+
+    if (nomeFantasia !== "" && cnpj !== "" && endereco !== "") {
+      await firebase
+        .firestore()
+        .collection("customers")
+        .add({
+          nomeFantasia: nomeFantasia,
+          cnpj: cnpj,
+          endereco: endereco,
+        })
+        .then(() => {
+          setNomeFantasia("");
+          setCnpj("");
+          setEndereco("");
+          toast.info("Empresa cadastrada com sucesso!");
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error("Erro ao cadastrar empresa.");
+        });
+    } else {
+      toast.error("Preencha todos os campos!");
+    }
   }
 
   return (
