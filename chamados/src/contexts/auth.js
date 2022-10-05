@@ -50,12 +50,12 @@ export default function AuthProvider({ children }) {
         setUser(data);
         storageUser(data);
         setLoadingAuth(false);
-        toast.success(`Bem vindo de volta, ${data.nome}!`)
+        toast.success(`Bem vindo de volta, ${data.nome}!`);
       })
       .catch((error) => {
         setLoadingAuth(false);
         console.log(error);
-        toast.error('Ocorreu um erro...')
+        toast.error("Ocorreu um erro...");
       });
   }
 
@@ -85,12 +85,12 @@ export default function AuthProvider({ children }) {
             setUser(data);
             storageUser(data);
             setLoading(false);
-            toast.success(`Seja bem vindo, ${data.nome}!`)
+            toast.success(`Seja bem vindo, ${data.nome}!`);
           });
       })
       .catch((error) => {
         console.log(error);
-        toast.error('Ocorreu um erro...')
+        toast.error("Ocorreu um erro...");
         setLoadingAuth(false);
       });
   }
@@ -103,7 +103,17 @@ export default function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ signed: !!user, user, loading, loadingAuth, signUp, signOut, signIn }}
+      value={{
+        signed: !!user,
+        user,
+        loading,
+        loadingAuth,
+        signUp,
+        signOut,
+        signIn,
+        setUser,
+        storageUser,
+      }}
     >
       {/*!!user - caso o objeto exista = true*/}
       {children}
