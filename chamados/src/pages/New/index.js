@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { FiPlusCircle } from "react-icons/fi";
+import { toast } from "react-toastify";
 import Header from "../../components/Header";
 import Title from "../../components/Title";
 import { AuthContext } from "../../contexts/auth";
@@ -55,7 +56,27 @@ export default function New() {
 
   async function handleRegister(e) {
     e.preventDefault();
-    // await firebase.firestore().collection('calls').add()
+    await firebase
+      .firestore()
+      .collection("chamados")
+      .add({
+        created: new Date(),
+        cliente: customers[customerSelected].nomeFantasia,
+        clienteId: customers[customerSelected].id,
+        assunto: assunto,
+        status: status,
+        complemento: complemento,
+        userId: user.uid,
+      })
+      .then(() => {
+        toast.success("Chamado registrado com sucesso!");
+        setComplemento("");
+        setCustomerSelected(0);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("Erro ao registrar");
+      });
   }
 
   function handleOptionChange(e) {
@@ -73,23 +94,24 @@ export default function New() {
 
         <div className="container">
           <form className="form-profile" onSubmit={handleRegister}>
-
             <label>Cliente</label>
 
             {loadCustomers ? (
               <input type="text" disabled value="Carregando clientes..." />
             ) : (
-              <select value={customerSelected} onChange={(e) => setCustomerSelected(e.target.value)}>
+              <select
+                value={customerSelected}
+                onChange={(e) => setCustomerSelected(e.target.value)}
+              >
                 {customers.map((item, index) => {
-                  return(
+                  return (
                     <option key={item.id} value={index}>
                       {item.nomeFantasia}
                     </option>
-                  )
+                  );
                 })}
               </select>
             )}
-
 
             <label>Assunto</label>
             <select
