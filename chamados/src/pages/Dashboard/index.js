@@ -7,7 +7,7 @@ import './dashboard.css'
 
 export default function Dashboard() {
 
-    const [chamados, setChamados] = useState([1]);
+    const [chamados, setChamados] = useState([]);
 
     return(
         <div>
