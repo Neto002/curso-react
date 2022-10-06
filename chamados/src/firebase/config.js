@@ -5,7 +5,7 @@ import 'firebase/auth'
 import 'firebase/storage'
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
+let firebaseConfig = {
   apiKey: "AIzaSyAidR-G11a3HE8krI-JGHLDm7On6rGiyic",
   authDomain: "chamados-8463e.firebaseapp.com",
   projectId: "chamados-8463e",

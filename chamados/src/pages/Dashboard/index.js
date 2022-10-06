@@ -41,7 +41,7 @@ export default function Dashboard() {
   }
 
   async function updateState(snapshot) {
-    let isCollectionEmpty = snapshot.size === 0;
+    const isCollectionEmpty = snapshot.size === 0;
 
     if (!isCollectionEmpty) {
       let lista = [];
@@ -55,13 +55,13 @@ export default function Dashboard() {
           created: doc.data().created,
           createdFormated: format(doc.data().created.toDate(), "dd/MM/yyyy"),
           status: doc.data().status,
-          complemento: doc.data().complemento,
+          complemento: doc.data().complemento
         });
       });
 
-      let lastDoc = snapshot.docs[snapshot.docs.length - 1];
+      const lastDoc = snapshot.docs[snapshot.docs.length - 1];
 
-      setChamados((chamados) => [...chamados, ...lista]);
+      setChamados([...chamados, ...lista]);
       setLastDocs(lastDoc);
     } else {
       setIsEmpty(true);
