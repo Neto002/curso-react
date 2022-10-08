@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { FiEdit2, FiMessageSquare, FiPlus, FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import firebase from "../../firebase/config";
 import Header from "../../components/Header";
 import Title from "../../components/Title";
-import Modal from '../../components/Modal'
+import Modal from "../../components/Modal";
 import "./dashboard.css";
 import { format } from "date-fns";
 
@@ -86,8 +87,8 @@ export default function Dashboard() {
   }
 
   function togglePostModal(item) {
-    setShowPostModal(!showPostModal)
-    setDetail(item)
+    setShowPostModal(!showPostModal);
+    setDetail(item);
   }
 
   if (loading) {
@@ -168,12 +169,13 @@ export default function Dashboard() {
                           <FiSearch color="white" size={17} />
                         </button>
 
-                        <button
+                        <Link
+                          to={`/new/${item.id}`}
                           className="action"
                           style={{ backgroundColor: "#f6a935" }}
                         >
                           <FiEdit2 color="white" size={17} />
-                        </button>
+                        </Link>
                       </td>
                     </tr>
                   );
@@ -196,10 +198,7 @@ export default function Dashboard() {
         )}
       </div>
 
-        {showPostModal && (
-            <Modal conteudo={detail} close={togglePostModal} />
-        )}
-
+      {showPostModal && <Modal conteudo={detail} close={togglePostModal} />}
     </div>
   );
 }

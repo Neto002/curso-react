@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { FiPlusCircle } from "react-icons/fi";
 import { toast } from "react-toastify";
@@ -5,9 +6,13 @@ import Header from "../../components/Header";
 import Title from "../../components/Title";
 import { AuthContext } from "../../contexts/auth";
 import firebase from "../../firebase/config";
+import { useParams, useHistory } from "react-router-dom";
 import "./new.css";
 
 export default function New() {
+  const { id } = useParams();
+  const history = useHistory();
+
   const [customers, setCustomers] = useState([]);
   const [loadCustomers, setLoadCustomers] = useState(true);
   const [customerSelected, setCustomerSelected] = useState(0);
@@ -15,6 +20,8 @@ export default function New() {
   const [assunto, setAssunto] = useState("Suporte");
   const [status, setStatus] = useState("Aberto");
   const [complemento, setComplemento] = useState("");
+
+  const [idCustomer, setIdCustomer] = useState(false);
 
   const { user } = useContext(AuthContext);
 
@@ -43,6 +50,10 @@ export default function New() {
 
           setCustomers(lista);
           setLoadCustomers(false);
+
+          if (id) {
+            loadId(lista);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -52,10 +63,61 @@ export default function New() {
     }
 
     loadCustomers();
-  }, []);
+  }, [id]);
+
+  async function loadId(lista) {
+    await firebase
+      .firestore()
+      .collection("chamados")
+      .doc(id)
+      .get()
+      .then(async (snapshot) => {
+        setAssunto(snapshot.data().assunto);
+        setStatus(snapshot.data().status);
+        setComplemento(snapshot.data().complemento);
+
+        let index = lista.findIndex(
+          (item) => item.id === snapshot.data().clienteId
+        );
+        setCustomerSelected(index);
+        setIdCustomer(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIdCustomer(false);
+      });
+  }
 
   async function handleRegister(e) {
     e.preventDefault();
+
+    if (idCustomer) {
+      await firebase
+        .firestore()
+        .collection("chamados")
+        .doc(id)
+        .update({
+          cliente: customers[customerSelected].nomeFantasia,
+          clienteId: customers[customerSelected].id,
+          assunto: assunto,
+          status: status,
+          complemento: complemento,
+          userId: user.uid,
+        })
+        .then(() => {
+          toast.success("Chamado editado com sucesso!");
+          setComplemento("");
+          setCustomerSelected(0);
+          history.push("/dashboard");
+        })
+        .catch((error) => {
+          toast.error("Erro ao registrar");
+          console.log(error);
+        });
+
+      return;
+    }
+
     await firebase
       .firestore()
       .collection("chamados")
@@ -72,6 +134,7 @@ export default function New() {
         toast.success("Chamado registrado com sucesso!");
         setComplemento("");
         setCustomerSelected(0);
+        history.push("/dashboard");
       })
       .catch((error) => {
         console.log(error);
