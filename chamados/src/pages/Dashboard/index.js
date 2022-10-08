@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import firebase from "../../firebase/config";
 import Header from "../../components/Header";
 import Title from "../../components/Title";
+import Modal from '../../components/Modal'
 import "./dashboard.css";
 import { format } from "date-fns";
 
@@ -18,6 +19,9 @@ export default function Dashboard() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [lastDocs, setLastDocs] = useState();
+
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [detail, setDetail] = useState();
 
   useEffect(() => {
     loadChamados();
@@ -55,7 +59,7 @@ export default function Dashboard() {
           created: doc.data().created,
           createdFormated: format(doc.data().created.toDate(), "dd/MM/yyyy"),
           status: doc.data().status,
-          complemento: doc.data().complemento
+          complemento: doc.data().complemento,
         });
       });
 
@@ -72,9 +76,18 @@ export default function Dashboard() {
 
   async function handleMore() {
     setLoadingMore(true);
-    await listRef.startAfter(lastDocs).limit(5).get().then((snapshot) => {
+    await listRef
+      .startAfter(lastDocs)
+      .limit(5)
+      .get()
+      .then((snapshot) => {
         updateState(snapshot);
-    })
+      });
+  }
+
+  function togglePostModal(item) {
+    setShowPostModal(!showPostModal)
+    setDetail(item)
   }
 
   if (loading) {
@@ -150,6 +163,7 @@ export default function Dashboard() {
                         <button
                           className="action"
                           style={{ backgroundColor: "#3583f6" }}
+                          onClick={() => togglePostModal(item)}
                         >
                           <FiSearch color="white" size={17} />
                         </button>
@@ -167,12 +181,25 @@ export default function Dashboard() {
               </tbody>
             </table>
 
-            {loadingMore && <h3 style={{textAlign: 'center', marginTop: 15}}>Buscando dados...</h3>}
+            {loadingMore && (
+              <h3 style={{ textAlign: "center", marginTop: 15 }}>
+                Buscando dados...
+              </h3>
+            )}
 
-            { !loadingMore && !isEmpty &&<button className="btn-more" onClick={handleMore}>Buscar mais</button>}
+            {!loadingMore && !isEmpty && (
+              <button className="btn-more" onClick={handleMore}>
+                Buscar mais
+              </button>
+            )}
           </>
         )}
       </div>
+
+        {showPostModal && (
+            <Modal conteudo={detail} close={togglePostModal} />
+        )}
+
     </div>
   );
 }
